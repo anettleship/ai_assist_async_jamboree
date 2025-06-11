@@ -1,5 +1,7 @@
 # AI Assist Async Jamboree
 
+Build using ai assistance to stand up something in a day, and to see what it's like to trust the machines. Don't trust anything you read here!
+
 A multi-application project featuring Flask and Tornado web applications with async communication capabilities.
 
 ## Applications

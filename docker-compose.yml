@@ -3,8 +3,8 @@ services:
     build:
       context: .
       dockerfile: tornado_app/Dockerfile
-    ports:
-      - "8888:8888"
+    expose:
+      - "8888"
     container_name: tornado-container
     restart: unless-stopped
     networks:
@@ -14,14 +14,30 @@ services:
     build:
       context: .
       dockerfile: flask_app/Dockerfile
-    ports:
-      - "5000:5000"
+    expose:
+      - "5000"
     container_name: flask-container
     restart: unless-stopped
     depends_on:
       - tornado-app
     environment:
       - TORNADO_BASE_URL=http://tornado-app:8888
+    networks:
+      - webapps
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "8888:8888"
+      - "5000:5000"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - flask-app
+      - tornado-app
+    container_name: nginx-proxy
+    restart: unless-stopped
     networks:
       - webapps
 

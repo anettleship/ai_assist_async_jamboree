@@ -1,6 +1,6 @@
 # AI Assist Async Jamboree - Docker Management
 
-.PHONY: help up down logs restart build clean test dev-setup
+.PHONY: help up down logs restart build clean test test-integration dev-setup
 
 # Default target
 help:
@@ -12,6 +12,7 @@ help:
 	@echo "  make build       - Build containers without starting"
 	@echo "  make clean       - Stop containers and remove images/volumes"
 	@echo "  make test        - Run tests in containers"
+	@echo "  make test-integration - Run full integration test (start, test, stop)"
 	@echo "  make dev-setup   - Setup development environment"
 
 # Start all containers
@@ -46,6 +47,10 @@ clean:
 test:
 	docker compose exec flask-app python -m pytest flask_app/tests/ -v || echo "Flask container not running"
 	docker compose exec tornado-app python -m pytest tornado_app/tests/ -v || echo "Tornado container not running"
+
+# Run integration test (starts services, tests, then stops)
+test-integration:
+	PYTHONPATH=. pipenv run pytest tests/test_integration.py -v
 
 # Development setup (local)
 dev-setup:

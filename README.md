@@ -95,13 +95,16 @@ A multi-application project featuring Flask and Tornado web applications with as
    ```
 
 2. Access applications:
-   - Flask App: http://localhost:5000
-   - Tornado App: http://localhost:8888
+   - Flask App: http://localhost:80 (via nginx)
+   - Tornado App: http://localhost:80/tornado/ (via nginx)
 
 ### Services
 
-- **tornado-app**: Tornado application container (port 8888)
-- **flask-app**: Flask application container (port 5000)
+- **nginx**: Reverse proxy (port 80)
+  - Routes `/` to Flask app
+  - Routes `/tornado/` to Tornado app
+- **tornado-app**: Tornado application container (internal port 8888)
+- **flask-app**: Flask application container (internal port 5000)
   - Depends on tornado-app
   - Pre-configured to communicate with tornado-app via internal network
 
@@ -116,6 +119,7 @@ make logs        # View logs
 make restart     # Restart containers
 make clean       # Clean up everything
 make test        # Run tests in containers
+make test-integration # Run full integration test (start, test, stop)
 make dev-setup   # Setup local development environment
 make help        # See all available commands
 ```
@@ -142,16 +146,45 @@ docker compose restart           # Restart services
 │   ├── Dockerfile
 │   ├── main.py               # Main Tornado application
 │   └── tests/                # Tornado app tests
+├── nginx/
+│   └── nginx.conf            # Reverse proxy configuration
 ├── docker-compose.yml        # Multi-container setup
 ├── Makefile                  # Docker management commands
 ├── Pipfile                   # Python dependencies
 └── CLAUDE.md                 # Development guidance
 ```
 
+## Testing
+
+### Unit Tests
+Run tests for individual applications:
+```bash
+# Local testing (requires pipenv)
+PYTHONPATH=. pipenv run pytest -v
+
+# Container testing (requires services running)
+make test
+```
+
+### Integration Testing
+Full end-to-end testing that starts all services, tests them, and stops them:
+```bash
+make test-integration
+```
+
+The integration test verifies:
+- All services start correctly
+- Nginx reverse proxy routing
+- Direct service access
+- Inter-service communication
+- Service health checks
+
 ## Features
 
 - **Async Communication**: Flask app can make both sync and async requests to Tornado
 - **Docker Networks**: Internal container communication
+- **Nginx Reverse Proxy**: Route traffic to multiple services
 - **Health Checks**: Both apps include health endpoints
 - **Testing**: Comprehensive test suites for both applications
+- **Integration Testing**: Full stack testing with automated service lifecycle
 - **Development Tools**: VSCode launch configurations and settings

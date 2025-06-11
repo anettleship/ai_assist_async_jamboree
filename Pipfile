@@ -6,6 +6,9 @@ name = "pypi"
 [packages]
 asyncio = "*"
 tornado = "*"
+flask = "*"
+aiohttp = "*"
+requests = "*"
 
 [dev-packages]
 pytest = "*"

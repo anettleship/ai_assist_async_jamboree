@@ -5,7 +5,7 @@ from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
 from tornado.httpclient import HTTPClientError
 
-from main import make_app
+from tornado_app.main import make_app
 
 # For AsyncHTTPTestCase, we need to use unittest-style classes
 # This is because AsyncHTTPTestCase is specifically designed for unittest

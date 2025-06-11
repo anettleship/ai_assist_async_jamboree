@@ -88,15 +88,29 @@ A multi-application project featuring Flask and Tornado web applications with as
 
 ### Quick Start
 
-1. Build and start all services:
-   ```bash
-   make up
-   # Or directly: docker compose up --build
-   ```
+Choose your environment:
 
-2. Access applications:
-   - Flask App: http://localhost:80 (via nginx)
-   - Tornado App: http://localhost:80/tornado/ (via nginx)
+**Development (with debugging):**
+```bash
+make dev
+```
+- Exposes debug ports 5678 (Flask) and 5679 (Tornado)
+- Direct app access: http://localhost:5000, http://localhost:8888
+- Nginx access: http://localhost:80
+
+**Reference/Staging:**
+```bash
+make ref
+```
+
+**Production:**
+```bash
+make prod
+```
+
+**Access applications:**
+- Flask App: http://localhost:80 (via nginx)
+- Tornado App: http://localhost:80/tornado/ (via nginx)
 
 ### Services
 
@@ -110,16 +124,30 @@ A multi-application project featuring Flask and Tornado web applications with as
 
 ### Docker Commands
 
-**Using Makefile (recommended):**
+**Environment Management:**
 ```bash
-make up          # Start all containers
-make up-bg       # Start containers in background
+make dev         # Start development environment (with debug ports)
+make ref         # Start reference/staging environment
+make prod        # Start production environment
+```
+
+**General Commands (work with any environment):**
+```bash
 make down        # Stop all containers
 make logs        # View logs
 make restart     # Restart containers
+make rebuild ENV=dev # Stop, rebuild, and start specific environment
 make clean       # Clean up everything
+```
+
+**Testing:**
+```bash
 make test        # Run tests in containers
 make test-integration # Run full integration test (start, test, stop)
+```
+
+**Setup:**
+```bash
 make dev-setup   # Setup local development environment
 make help        # See all available commands
 ```
@@ -154,10 +182,78 @@ docker compose restart           # Restart services
 └── CLAUDE.md                 # Development guidance
 ```
 
-## Testing
+## Development Workflow
 
-### Unit Tests
-Run tests for individual applications:
+### Environment Strategy
+- **dev**: Development with debugging enabled, direct port access
+- **ref**: Reference/staging environment for testing releases
+- **prod**: Production environment with resource limits and scaling
+
+### Image Tagging
+
+**Default Tags by Environment:**
+- `ai-assist-flask:dev`, `ai-assist-tornado:dev`
+- `ai-assist-flask:ref`, `ai-assist-tornado:ref`  
+- `ai-assist-flask:latest`, `ai-assist-tornado:latest`
+
+**Setting Custom Image Tags:**
+
+1. **Environment Variables:**
+   ```bash
+   IMAGE_TAG=v1.2.3 make up-prod
+   FLASK_IMAGE=myregistry.com/flask:v1.2.3 make up-ref
+   ```
+
+2. **Using environment-specific .env files:**
+   ```bash
+   # Create environment-specific config files
+   cp .env.example .env.dev
+   cp .env.example .env.ref  
+   cp .env.example .env.prod
+   
+   # Edit each file with appropriate image tags
+   # Then run environment commands (automatically loads correct .env)
+   make up-dev   # loads .env.dev
+   make up-ref   # loads .env.ref
+   make up-prod  # loads .env.prod
+   ```
+
+3. **For CI/CD deployments:**
+   ```bash
+   export IMAGE_TAG=v1.2.3
+   export FLASK_IMAGE=myregistry.com/ai-assist-flask:v1.2.3
+   export TORNADO_IMAGE=myregistry.com/ai-assist-tornado:v1.2.3
+   make up-prod
+   ```
+
+### Development Setup
+
+1. **Create environment config:**
+   ```bash
+   cp .env.dev.example .env.dev
+   # Edit .env.dev as needed
+   ```
+
+2. **Setup VSCode debugging:**
+   ```bash
+   mkdir -p .vscode
+   cp launch.json.example .vscode/launch.json
+   ```
+
+3. **Start development environment:**
+   ```bash
+   make dev
+   ```
+
+### Remote Debugging (VSCode)
+1. Start development environment: `make dev`
+2. In VSCode, use "Remote Debug: Flask Container" or "Remote Debug: Tornado Container" 
+3. Apps wait for debugger connection on ports 5678/5679
+4. Set breakpoints in your code and attach the debugger
+
+### Testing
+
+**Unit Tests:**
 ```bash
 # Local testing (requires pipenv)
 PYTHONPATH=. pipenv run pytest -v
@@ -166,16 +262,14 @@ PYTHONPATH=. pipenv run pytest -v
 make test
 ```
 
-### Integration Testing
-Full end-to-end testing that starts all services, tests them, and stops them:
+**Integration Testing:**
 ```bash
 make test-integration
 ```
 
-The integration test verifies:
+Integration tests verify:
 - All services start correctly
 - Nginx reverse proxy routing
-- Direct service access
 - Inter-service communication
 - Service health checks
 

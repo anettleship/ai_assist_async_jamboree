@@ -20,4 +20,4 @@ ENV PYTHONPATH=/app
 EXPOSE 5000
 
 # Run the Flask application
-CMD ["python", "flask_app/flask_app.py"]
+CMD ["python", "-Xfrozen_modules=off", "flask_app/flask_app.py"]

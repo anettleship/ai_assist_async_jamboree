@@ -1,8 +1,12 @@
 services:
   tornado-app:
+    image: ${TORNADO_IMAGE:-ai-assist-tornado:latest}
     build:
       context: .
       dockerfile: tornado_app/Dockerfile
+      tags:
+        - ai-assist-tornado:latest
+        - ai-assist-tornado:${IMAGE_TAG:-latest}
     expose:
       - "8888"
     container_name: tornado-container
@@ -11,9 +15,13 @@ services:
       - webapps
 
   flask-app:
+    image: ${FLASK_IMAGE:-ai-assist-flask:latest}
     build:
       context: .
       dockerfile: flask_app/Dockerfile
+      tags:
+        - ai-assist-flask:latest
+        - ai-assist-flask:${IMAGE_TAG:-latest}
     expose:
       - "5000"
     container_name: flask-container
@@ -29,8 +37,6 @@ services:
     image: nginx:alpine
     ports:
       - "80:80"
-      - "8888:8888"
-      - "5000:5000"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:

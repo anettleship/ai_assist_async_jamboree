@@ -1,0 +1,25 @@
+services:
+  tornado-app:
+    ports:
+      - "127.0.0.1:8888:8888"  # Direct access for development (localhost only)
+      - "127.0.0.1:5679:5679"  # Debug port (localhost only)
+    command: ["sh", "-c", "echo '🐛 Debug server ready on port 5679. Connect your debugger to localhost:5679' && python -m debugpy --listen 0.0.0.0:5679 tornado_app/main.py"]
+    environment:
+      - PYTHONPATH=/app
+      - DEBUG=1
+
+  flask-app:
+    ports:
+      - "127.0.0.1:5000:5000"  # Direct access for development (localhost only)
+      - "127.0.0.1:5678:5678"  # Debug port (localhost only)
+    command: ["sh", "-c", "echo '🐛 Debug server ready on port 5678. Connect your debugger to localhost:5678' && python -m debugpy --listen 0.0.0.0:5678 flask_app/flask_app.py"]
+    environment:
+      - TORNADO_BASE_URL=http://tornado-app:8888
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - PYTHONPATH=/app
+
+  nginx:
+    ports:
+      - "80:80"
+      - "8080:80"  # Alternative port for dev

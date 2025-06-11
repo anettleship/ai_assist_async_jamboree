@@ -3,7 +3,6 @@ import asyncio
 import unittest
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
-from tornado.httpclient import HTTPClientError
 
 from tornado_app.main import make_app
 

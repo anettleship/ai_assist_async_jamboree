@@ -27,7 +27,7 @@ def call_tornado():
         
         # Make request to Tornado app
         tornado_url = f"{TORNADO_BASE_URL}{endpoint}"
-        response = requests.get(tornado_url, timeout=5)
+        response = requests.get(tornado_url, timeout=30)
         
         return jsonify({
             'success': True,

@@ -121,10 +121,13 @@ test-all:
 	docker compose --env-file .env.ref -f docker-compose.yml -f docker-compose.ref.yml up --build -d
 	@echo "⏳ Waiting for services to be ready..."
 	sleep 10
-	@echo "🧪 Running health checks..."
-	curl -f -s http://localhost:80/health > /dev/null || (echo "❌ REF health check failed" && docker compose down && exit 1)
-	curl -f -s http://localhost:80/ > /dev/null || (echo "❌ REF Flask app failed" && docker compose down && exit 1)
-	curl -f -s http://localhost:80/tornado/ > /dev/null || (echo "❌ REF Tornado app failed" && docker compose down && exit 1)
+	@echo "🧪 Running health checks (tests will exit on failure)..."
+	@curl -f -s http://localhost:80/health > /dev/null || (echo "REF health check failed" && docker compose down && exit 1)
+	@echo "✅ Health check passed"
+	@curl -f -s http://localhost:80/ > /dev/null || (echo "REF Flask app failed" && docker compose down && exit 1)
+	@echo "✅ Flask app accessible"
+	@curl -f -s http://localhost:80/tornado/ > /dev/null || (echo "REF Tornado app failed" && docker compose down && exit 1)
+	@echo "✅ Tornado app accessible"
 	@echo "✅ REF environment healthy"
 	docker compose down
 	@echo ""
@@ -133,16 +136,19 @@ test-all:
 	docker compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml up --build -d
 	@echo "⏳ Waiting for services to be ready..."
 	sleep 10
-	@echo "🧪 Running health checks..."
-	curl -f -s http://localhost:80/health > /dev/null || (echo "❌ PROD health check failed" && docker compose down && exit 1)
-	curl -f -s http://localhost:80/ > /dev/null || (echo "❌ PROD Flask app failed" && docker compose down && exit 1)
-	curl -f -s http://localhost:80/tornado/ > /dev/null || (echo "❌ PROD Tornado app failed" && docker compose down && exit 1)
+	@echo "🧪 Running health checks (tests will exit on failure)..."
+	@curl -f -s http://localhost:80/health > /dev/null || (echo "PROD health check failed" && docker compose down && exit 1)
+	@echo "✅ Health check passed"
+	@curl -f -s http://localhost:80/ > /dev/null || (echo "PROD Flask app failed" && docker compose down && exit 1)
+	@echo "✅ Flask app accessible"
+	@curl -f -s http://localhost:80/tornado/ > /dev/null || (echo "PROD Tornado app failed" && docker compose down && exit 1)
+	@echo "✅ Tornado app accessible"
 	@echo "✅ PROD environment healthy"
 	docker compose down
 	@echo ""
 	
 	@echo "🧪 Running full integration test suite..."
-	PYTHONPATH=. pipenv run pytest tests/test_integration.py -v || (echo "❌ Integration tests failed" && exit 1)
+	PYTHONPATH=. pipenv run pytest tests/test_integration.py -v || (echo "Integration tests failed" && exit 1)
 	@echo ""
 	
 	@echo "🎉 All environments built and tested successfully!"

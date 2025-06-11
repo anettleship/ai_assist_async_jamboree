@@ -3,8 +3,8 @@ import tornado
 
 class MainHandler(tornado.web.RequestHandler):
     async def get(self):
-        # Add 20 second delay to demonstrate async vs sync difference
-        await asyncio.sleep(20)
+        # Add 2 second delay to demonstrate async vs sync difference
+        await asyncio.sleep(2)
         self.write("Hello, world")
 
 def make_app():

@@ -12,7 +12,7 @@ def make_app():
 
 async def main():
     app = make_app()
-    app.listen(8888)
+    app.listen(8888, address='0.0.0.0')
     await asyncio.Event().wait()
 
 if __name__ == "__main__":

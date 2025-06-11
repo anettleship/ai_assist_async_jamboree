@@ -8,10 +8,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Install dependencies: `pipenv install --dev`
 - Activate virtual environment: `pipenv shell`
 
-### Running the Application
-- Start the Tornado web server: `python main.py`
-  - Server runs on port 8888
-  - Access at http://localhost:8888
+### Running the Applications
+
+#### Local Development
+- Start Tornado app: `python tornado_app/main.py` (port 8888)
+- Start Flask app: `python flask_app/flask_app.py` (port 5000)
+
+#### Docker Deployment
+- Build and start both apps: `docker compose up --build`
+- Start in background: `docker compose up -d`
+- View logs: `docker compose logs -f`
+- Stop services: `docker compose down`
 
 ### Testing
 - Run all tests: `PYTHONPATH=. pipenv run pytest`

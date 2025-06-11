@@ -1,0 +1,30 @@
+services:
+  tornado-app:
+    build:
+      context: .
+      dockerfile: tornado_app/Dockerfile
+    ports:
+      - "8888:8888"
+    container_name: tornado-container
+    restart: unless-stopped
+    networks:
+      - webapps
+
+  flask-app:
+    build:
+      context: .
+      dockerfile: flask_app/Dockerfile
+    ports:
+      - "5000:5000"
+    container_name: flask-container
+    restart: unless-stopped
+    depends_on:
+      - tornado-app
+    environment:
+      - TORNADO_BASE_URL=http://tornado-app:8888
+    networks:
+      - webapps
+
+networks:
+  webapps:
+    driver: bridge

@@ -2,11 +2,12 @@ from flask import Flask, render_template, request, jsonify
 import requests
 import asyncio
 import aiohttp
+import os
 
 app = Flask(__name__)
 
 # Configuration
-TORNADO_BASE_URL = "http://localhost:8888"
+TORNADO_BASE_URL = os.getenv("TORNADO_BASE_URL", "http://localhost:8888")
 
 @app.route('/')
 def index():
@@ -99,4 +100,4 @@ def health():
     return jsonify({'status': 'healthy', 'service': 'Flask Tornado Proxy'})
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(host='0.0.0.0', debug=True, port=5000)

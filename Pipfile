@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 asyncio = "*"
 tornado = "*"
-flask = {extras = ["async"], version = "*"}
+flask = {extras = ["async"] }
 aiohttp = "*"
 requests = "*"
 
